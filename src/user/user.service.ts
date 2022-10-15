@@ -14,11 +14,14 @@ export class UserService {
   ) {}
 
   async create(createUserDto: CreateUserDto, ava: any) {
-    const fileName = await this.fileService.createFile(ava);
+    const fileName = this.fileService.createFileFromUrl(
+      'https://joeschmoe.io/api/v1/random',
+    );
     const user = this.usersRepository.create({
       ...createUserDto,
       ava: fileName,
     });
+
     return user;
   }
 
