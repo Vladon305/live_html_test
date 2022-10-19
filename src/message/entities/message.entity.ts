@@ -3,7 +3,7 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  OneToOne,
+  ManyToOne,
   JoinColumn,
 } from 'typeorm';
 
@@ -15,7 +15,7 @@ export class Message {
   @Column()
   message: string;
 
-  @OneToOne(() => Dialog, (dialog) => dialog.messages)
+  @ManyToOne(() => Dialog, (dialog) => dialog.messages)
   @JoinColumn()
   dialog: Dialog;
 }

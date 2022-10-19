@@ -1,6 +1,12 @@
 import { Message } from 'src/message/entities/message.entity';
 import { User } from 'src/user/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
 
 @Entity()
 export class Dialog {
@@ -10,7 +16,7 @@ export class Dialog {
   @Column()
   name: string;
 
-  @OneToMany(() => User, (user) => user.dialog)
+  @ManyToMany(() => User, (user) => user.dialogs)
   users: User[];
 
   @OneToMany(() => Message, (message) => message.dialog)

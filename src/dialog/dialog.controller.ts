@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { DialogService } from './dialog.service';
 import { CreateDialogDto } from './dto/create-dialog.dto';
@@ -15,9 +16,12 @@ import { UpdateDialogDto } from './dto/update-dialog.dto';
 export class DialogController {
   constructor(private readonly dialogService: DialogService) {}
 
-  @Post()
-  create(@Body() createDialogDto: CreateDialogDto) {
-    return this.dialogService.create(createDialogDto);
+  @Post(':userId')
+  create(
+    @Param('userId') userId: string,
+    @Body() createDialogDto: CreateDialogDto,
+  ) {
+    return this.dialogService.create(userId, createDialogDto);
   }
 
   @Get()
@@ -27,16 +31,21 @@ export class DialogController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.dialogService.findOne(+id);
+    return this.dialogService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateDialogDto: UpdateDialogDto) {
-    return this.dialogService.update(+id, updateDialogDto);
+    return this.dialogService.update(id, updateDialogDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.dialogService.remove(+id);
+    return this.dialogService.remove(id);
+  }
+
+  @Put(':id')
+  addUser(@Param('id') id: string, @Body() { userId }: { userId: string }) {
+    return this.dialogService.addUser(id, userId);
   }
 }

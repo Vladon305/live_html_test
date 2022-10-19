@@ -10,33 +10,52 @@ import {
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { PusherService } from 'src/pusher/pusher.service';
 
-@Controller('message')
+@Controller('dialog')
 export class MessageController {
-  constructor(private readonly messageService: MessageService) {}
+  constructor(
+    private readonly messageService: MessageService,
+    private pusherService: PusherService,
+  ) {}
 
-  @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messageService.create(createMessageDto);
+  @Post(':dialogId/message')
+  async create(
+    @Param('dialogId') dialogId: string,
+    @Body() createMessageDto: CreateMessageDto,
+  ) {
+    const message = this.messageService.create(dialogId, createMessageDto);
+    await this.pusherService.trigger('chat', 'message', message);
+    return message;
   }
 
-  @Get()
-  findAll() {
-    return this.messageService.findAll();
+  @Get(':dialogId/message')
+  findAll(@Param('dialogId') dialogId: string) {
+    return this.messageService.findAll(dialogId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.messageService.findOne(+id);
+  @Get(':dialogId/message/:messageId')
+  findOne(
+    @Param('dialogId') dialogId: string,
+    @Param('messageId') messageId: string,
+  ) {
+    return this.messageService.findOne(dialogId, messageId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateMessageDto: UpdateMessageDto) {
-    return this.messageService.update(+id, updateMessageDto);
+  @Patch(':dialogId/message/:messageId')
+  update(
+    @Param('dialogId') dialogId: string,
+    @Param('messageId') messageId: string,
+    @Body() updateMessageDto: UpdateMessageDto,
+  ) {
+    return this.messageService.update(dialogId, messageId, updateMessageDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.messageService.remove(+id);
+  @Delete(':dialogId/message/:messageId')
+  remove(
+    @Param('dialogId') dialogId: string,
+    @Param('messageId') messageId: string,
+  ) {
+    return this.messageService.remove(dialogId, messageId);
   }
 }

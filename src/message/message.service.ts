@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Dialog } from 'src/dialog/entities/dialog.entity';
 import { Repository } from 'typeorm';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
@@ -10,25 +11,51 @@ export class MessageService {
   constructor(
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
+    @InjectRepository(Dialog)
+    private dialogRepository: Repository<Dialog>,
   ) {}
 
-  create(createMessageDto: CreateMessageDto) {
-    return this.messageRepository.create(createMessageDto);
+  async create(dialogId: any, createMessageDto: CreateMessageDto) {
+    const dialog = await this.dialogRepository.findOne({
+      where: { id: dialogId },
+      relations: ['messages'],
+    });
+    if (!dialog) {
+      throw new HttpException(
+        'Dialog not found. Cannot create message',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const message = await this.messageRepository.save(
+      this.messageRepository.create(createMessageDto),
+    );
+    dialog.messages.push(message);
+    this.dialogRepository.save(dialog);
+    return message;
   }
 
-  findAll() {
-    return this.messageRepository.find();
+  findAll(id: any) {
+    return this.messageRepository.findBy({ dialog: { id } });
   }
 
-  findOne(id: number) {
-    return this.messageRepository.findOneBy({ id });
+  findOne(dialogId: any, messageId: any) {
+    return this.messageRepository.findOneBy({
+      dialog: { id: dialogId },
+      id: messageId,
+    });
   }
 
-  update(id: number, updateMessageDto: UpdateMessageDto) {
-    return this.messageRepository.update(id, updateMessageDto);
+  update(dialogId: any, messageId: any, updateMessageDto: UpdateMessageDto) {
+    return this.messageRepository.update(
+      { dialog: { id: dialogId }, id: messageId },
+      updateMessageDto,
+    );
   }
 
-  remove(id: number) {
-    return this.messageRepository.delete(id);
+  remove(dialogId: any, messageId: any) {
+    return this.messageRepository.delete({
+      dialog: { id: dialogId },
+      id: messageId,
+    });
   }
 }

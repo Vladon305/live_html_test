@@ -13,27 +13,33 @@ export class UserService {
     private fileService: FilesService,
   ) {}
 
-  async create(createUserDto: CreateUserDto, ava: any) {
-    const fileName = this.fileService.createFileFromUrl(
+  async create(createUserDto: CreateUserDto) {
+    const fileName = await this.fileService.createFileFromUrl(
       'https://joeschmoe.io/api/v1/random',
     );
-    const user = this.usersRepository.create({
-      ...createUserDto,
-      ava: fileName,
-    });
+    const user = this.usersRepository.save(
+      this.usersRepository.create({
+        ...createUserDto,
+        ava: fileName,
+        dialogs: [],
+      }),
+    );
 
     return user;
   }
 
   findAll() {
-    return this.usersRepository.find();
+    return this.usersRepository.find({ relations: ['dialogs'] });
   }
 
-  findOne(id: number) {
-    return this.usersRepository.findOneBy({ id });
+  findOne(id: any) {
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: ['dialogs'],
+    });
   }
 
-  remove(id: number) {
+  remove(id: any) {
     return this.usersRepository.delete(id);
   }
 }

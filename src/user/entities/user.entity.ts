@@ -1,5 +1,11 @@
 import { Dialog } from 'src/dialog/entities/dialog.entity';
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -12,9 +18,7 @@ export class User {
   @Column()
   ava: string;
 
-  @Column({ default: true })
-  isSubscribe: boolean;
-
-  @ManyToOne(() => Dialog, (dialog) => dialog.users)
-  dialog: Dialog;
+  @ManyToMany(() => Dialog, (dialog) => dialog.users, { cascade: true })
+  @JoinTable()
+  dialogs: Dialog[];
 }
