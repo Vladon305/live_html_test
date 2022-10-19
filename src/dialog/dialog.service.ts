@@ -26,6 +26,7 @@ export class DialogService {
     const dialog = this.dialogRepository.create({
       ...createDialogDto,
       users: [user],
+      messages: [],
     });
     user.dialogs.push(dialog);
 
@@ -34,13 +35,13 @@ export class DialogService {
   }
 
   findAll() {
-    return this.dialogRepository.find({ relations: ['users'] });
+    return this.dialogRepository.find({ relations: ['users', 'messages'] });
   }
 
   findOne(id: any) {
     return this.dialogRepository.findOne({
       where: { id },
-      relations: ['users'],
+      relations: ['users', 'messages'],
     });
   }
 
@@ -65,7 +66,7 @@ export class DialogService {
     });
     const dialogWithUser = await this.dialogRepository.findOne({
       where: { id: dialogId },
-      relations: ['users'],
+      relations: ['users', 'messages'],
     });
 
     if (!user || !dialog || !userWithDialog || !dialogWithUser) {
