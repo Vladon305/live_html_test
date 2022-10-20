@@ -30,16 +30,15 @@ export class DialogService {
     const newDialog = this.dialogRepository.create({
       ...createDialogDto,
       users: [user],
-      messages: [],
     });
     this.dialogRepository.save(newDialog);
 
-    const dialog = await this.dialogRepository.findOne({
-      where: { id: newDialog.id },
+    const dialog = await this.dialogRepository.findOneBy({
+      id: newDialog.id,
     });
     userWithDialogs.dialogs.push(dialog);
-
     this.userRepository.save(userWithDialogs);
+
     return newDialog;
   }
 
