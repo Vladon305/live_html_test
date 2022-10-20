@@ -17,7 +17,11 @@ export class DialogService {
 
   async create(userId: any, createDialogDto: CreateDialogDto) {
     const user = await this.userRepository.findOneBy({ id: userId });
-    if (!user) {
+    const userWithDialogs = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['dialogs'],
+    });
+    if (!user || !userWithDialogs) {
       throw new HttpException(
         'User not found. Cannot create dialog',
         HttpStatus.BAD_REQUEST,
@@ -28,9 +32,9 @@ export class DialogService {
       users: [user],
       messages: [],
     });
-    user.dialogs.push(dialog);
+    userWithDialogs.dialogs.push(dialog);
 
-    this.userRepository.save(user);
+    this.userRepository.save(userWithDialogs);
     return this.dialogRepository.save(dialog);
   }
 
@@ -57,28 +61,28 @@ export class DialogService {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
-    const userWithDialog = await this.userRepository.findOne({
+    const userWithDialogs = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['dialogs'],
     });
     const dialog = await this.dialogRepository.findOne({
       where: { id: dialogId },
     });
-    const dialogWithUser = await this.dialogRepository.findOne({
+    const dialogWithUsers = await this.dialogRepository.findOne({
       where: { id: dialogId },
       relations: ['users', 'messages'],
     });
 
-    if (!user || !dialog || !userWithDialog || !dialogWithUser) {
+    if (!user || !dialog || !userWithDialogs || !dialogWithUsers) {
       throw new HttpException(
         'User or dialog not found. Cannot add user to dialog',
         HttpStatus.BAD_REQUEST,
       );
     }
 
-    userWithDialog.dialogs.push(dialog);
-    this.userRepository.save(userWithDialog);
-    dialogWithUser.users.push(user);
-    return this.dialogRepository.save(dialogWithUser);
+    userWithDialogs.dialogs.push(dialog);
+    this.userRepository.save(userWithDialogs);
+    dialogWithUsers.users.push(user);
+    return this.dialogRepository.save(dialogWithUsers);
   }
 }
