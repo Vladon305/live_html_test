@@ -27,15 +27,20 @@ export class DialogService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const dialog = this.dialogRepository.create({
+    const newDialog = this.dialogRepository.create({
       ...createDialogDto,
       users: [user],
       messages: [],
     });
+    this.dialogRepository.save(newDialog);
+
+    const dialog = await this.dialogRepository.findOne({
+      where: { id: newDialog.id },
+    });
     userWithDialogs.dialogs.push(dialog);
 
     this.userRepository.save(userWithDialogs);
-    return this.dialogRepository.save(dialog);
+    return newDialog;
   }
 
   findAll() {
