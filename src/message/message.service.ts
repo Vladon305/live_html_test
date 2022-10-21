@@ -16,21 +16,22 @@ export class MessageService {
   ) {}
 
   async create(dialogId: any, createMessageDto: CreateMessageDto) {
-    const dialog = await this.dialogRepository.findOne({
+    const dialogWithMessages = await this.dialogRepository.findOne({
       where: { id: dialogId },
       relations: ['messages'],
     });
-    if (!dialog) {
+    const dialog = await this.dialogRepository.findOneBy({ id: dialogId });
+    if (!dialog || !dialogWithMessages) {
       throw new HttpException(
         'Dialog not found. Cannot create message',
         HttpStatus.BAD_REQUEST,
       );
     }
     const message = await this.messageRepository.save(
-      this.messageRepository.create(createMessageDto),
+      this.messageRepository.create({ ...createMessageDto, dialog }),
     );
-    dialog.messages.push(message);
-    this.dialogRepository.save(dialog);
+    dialogWithMessages.messages.push(message);
+    this.dialogRepository.save(dialogWithMessages);
     return message;
   }
 

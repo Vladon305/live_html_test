@@ -24,7 +24,10 @@ export class MessageController {
     @Param('dialogId') dialogId: string,
     @Body() createMessageDto: CreateMessageDto,
   ) {
-    const message = this.messageService.create(dialogId, createMessageDto);
+    const message = await this.messageService.create(
+      dialogId,
+      createMessageDto,
+    );
     await this.pusherService.trigger('chat', 'message', message);
     return message;
   }
