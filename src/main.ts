@@ -13,6 +13,7 @@ async function bootstrap() {
       'PATCH',
       'POST',
       'DELETE',
+      'OPTIONS',
     ],
     credentials: true,
   });
