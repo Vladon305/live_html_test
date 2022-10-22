@@ -1,10 +1,12 @@
 import { Dialog } from 'src/dialog/entities/dialog.entity';
+import { Message } from 'src/message/entities/message.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -21,4 +23,7 @@ export class User {
   @ManyToMany(() => Dialog, (dialog) => dialog.users, { cascade: true })
   @JoinTable()
   dialogs: Dialog[];
+
+  @OneToMany(() => Message, (message) => message.user, { cascade: true })
+  messages: Message[];
 }

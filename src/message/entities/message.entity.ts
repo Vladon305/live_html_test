@@ -1,4 +1,5 @@
 import { Dialog } from 'src/dialog/entities/dialog.entity';
+import { User } from 'src/user/entities/user.entity';
 import {
   Entity,
   Column,
@@ -18,4 +19,8 @@ export class Message {
   @ManyToOne(() => Dialog, (dialog) => dialog.messages)
   @JoinColumn()
   dialog: Dialog;
+
+  @ManyToOne(() => User, (user) => user.messages)
+  @JoinColumn()
+  user: User;
 }

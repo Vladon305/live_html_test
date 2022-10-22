@@ -31,6 +31,7 @@ export class DialogService {
       ...createDialogDto,
       users: [user],
     });
+
     this.dialogRepository.save(newDialog);
 
     const dialog = await this.dialogRepository.findOneBy({
@@ -39,7 +40,10 @@ export class DialogService {
     userWithDialogs.dialogs.push(dialog);
     this.userRepository.save(userWithDialogs);
 
-    return newDialog;
+    return this.dialogRepository.findOne({
+      where: { id: newDialog.id },
+      relations: ['users', 'messages'],
+    });
   }
 
   findAll() {
@@ -54,7 +58,11 @@ export class DialogService {
   }
 
   update(id: any, updateDialogDto: UpdateDialogDto) {
-    return this.dialogRepository.update(id, updateDialogDto);
+    this.dialogRepository.update(id, updateDialogDto);
+    return this.dialogRepository.findOne({
+      where: { id },
+      relations: ['users', 'messages'],
+    });
   }
 
   remove(id: any) {
@@ -87,6 +95,10 @@ export class DialogService {
     userWithDialogs.dialogs.push(dialog);
     this.userRepository.save(userWithDialogs);
     dialogWithUsers.users.push(user);
-    return this.dialogRepository.save(dialogWithUsers);
+    this.dialogRepository.save(dialogWithUsers);
+    return this.dialogRepository.findOne({
+      where: { id: dialogId },
+      relations: ['users', 'messages'],
+    });
   }
 }
