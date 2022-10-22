@@ -27,18 +27,20 @@ export class DialogService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    const newDialog = this.dialogRepository.create({
-      ...createDialogDto,
-      users: [user],
-    });
 
-    this.dialogRepository.save(newDialog);
+    const newDialog = await this.dialogRepository.save(
+      this.dialogRepository.create({
+        ...createDialogDto,
+        users: [user],
+      }),
+    );
 
     const dialog = await this.dialogRepository.findOneBy({
       id: newDialog.id,
     });
     userWithDialogs.dialogs.push(dialog);
     this.userRepository.save(userWithDialogs);
+    console.log(newDialog);
 
     return this.dialogRepository.findOne({
       where: { id: newDialog.id },
@@ -65,7 +67,15 @@ export class DialogService {
     });
   }
 
-  remove(id: any) {
+  async remove(id: any) {
+    const users = await this.userRepository.find({
+      where: { dialogs: { id } },
+      relations: ['dialogs'],
+    });
+    users.forEach((user) => {
+      user.dialogs = user.dialogs.filter((dialog) => dialog.id !== id);
+    });
+    this.userRepository.save(users);
     return this.dialogRepository.delete(id);
   }
 
