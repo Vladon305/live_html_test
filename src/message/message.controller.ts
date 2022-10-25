@@ -11,15 +11,20 @@ import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { PusherService } from 'src/pusher/pusher.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Message } from './entities/message.entity';
 
-@Controller('dialog')
+@ApiTags('Сообщения')
+@Controller('dialogs')
 export class MessageController {
   constructor(
     private readonly messageService: MessageService,
     private pusherService: PusherService,
   ) {}
 
-  @Post(':dialogId/message')
+  @ApiOperation({ summary: 'Создание сообщения' })
+  @ApiResponse({ status: 200, type: Message })
+  @Post(':dialogId/messages')
   async create(
     @Param('dialogId') dialogId: string,
     @Body() createMessageDto: CreateMessageDto,
@@ -32,12 +37,16 @@ export class MessageController {
     return message;
   }
 
-  @Get(':dialogId/message')
+  @ApiOperation({ summary: 'Получение всех сообщений' })
+  @ApiResponse({ status: 200, type: [Message] })
+  @Get(':dialogId/messages')
   findAll(@Param('dialogId') dialogId: string) {
     return this.messageService.findAll(dialogId);
   }
 
-  @Get(':dialogId/message/:messageId')
+  @ApiOperation({ summary: 'Получить одно сообщение' })
+  @ApiResponse({ status: 200, type: Message })
+  @Get(':dialogId/messages/:messageId')
   findOne(
     @Param('dialogId') dialogId: string,
     @Param('messageId') messageId: string,
@@ -45,7 +54,9 @@ export class MessageController {
     return this.messageService.findOne(dialogId, messageId);
   }
 
-  @Patch(':dialogId/message/:messageId')
+  @ApiOperation({ summary: 'Изменить сообщение' })
+  @ApiResponse({ status: 200, type: Message })
+  @Patch(':dialogId/messages/:messageId')
   update(
     @Param('dialogId') dialogId: string,
     @Param('messageId') messageId: string,
@@ -54,7 +65,9 @@ export class MessageController {
     return this.messageService.update(dialogId, messageId, updateMessageDto);
   }
 
-  @Delete(':dialogId/message/:messageId')
+  @ApiOperation({ summary: 'Удалить сообщение' })
+  @ApiResponse({ status: 200, type: Message })
+  @Delete(':dialogId/messages/:messageId')
   remove(
     @Param('dialogId') dialogId: string,
     @Param('messageId') messageId: string,

@@ -32,14 +32,14 @@ export class UserService {
     return this.usersRepository.find({ relations: ['dialogs'] });
   }
 
-  findOne(id: any) {
+  findOne(id: string) {
     return this.usersRepository.findOne({
       where: { id },
       relations: ['dialogs'],
     });
   }
 
-  remove(id: any) {
+  remove(id: string) {
     return this.usersRepository.delete(id);
   }
 }

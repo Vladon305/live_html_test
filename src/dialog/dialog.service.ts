@@ -15,7 +15,7 @@ export class DialogService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(userId: any, createDialogDto: CreateDialogDto) {
+  async create(userId: string, createDialogDto: CreateDialogDto) {
     const user = await this.userRepository.findOneBy({ id: userId });
     const userWithDialogs = await this.userRepository.findOne({
       where: { id: userId },
@@ -52,14 +52,14 @@ export class DialogService {
     return this.dialogRepository.find({ relations: ['users', 'messages'] });
   }
 
-  findOne(id: any) {
+  findOne(id: string) {
     return this.dialogRepository.findOne({
       where: { id },
       relations: ['users', 'messages'],
     });
   }
 
-  update(id: any, updateDialogDto: UpdateDialogDto) {
+  update(id: string, updateDialogDto: UpdateDialogDto) {
     this.dialogRepository.update(id, updateDialogDto);
     return this.dialogRepository.findOne({
       where: { id },
@@ -67,7 +67,7 @@ export class DialogService {
     });
   }
 
-  async remove(id: any) {
+  async remove(id: string) {
     const users = await this.userRepository.find({
       where: { dialogs: { id } },
       relations: ['dialogs'],
@@ -79,7 +79,7 @@ export class DialogService {
     return this.dialogRepository.delete(id);
   }
 
-  async addUser(dialogId: any, userId: any) {
+  async addUser(dialogId: string, userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
