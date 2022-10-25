@@ -42,26 +42,26 @@ export class DialogService {
     this.userRepository.save(userWithDialogs);
     console.log(newDialog);
 
-    return this.dialogRepository.findOne({
+    return await this.dialogRepository.findOne({
       where: { id: newDialog.id },
       relations: ['users', 'messages'],
     });
   }
 
-  findAll() {
+  async findAll() {
     return this.dialogRepository.find({ relations: ['users', 'messages'] });
   }
 
-  findOne(id: string) {
-    return this.dialogRepository.findOne({
+  async findOne(id: string) {
+    return await this.dialogRepository.findOne({
       where: { id },
       relations: ['users', 'messages'],
     });
   }
 
-  update(id: string, updateDialogDto: UpdateDialogDto) {
+  async update(id: string, updateDialogDto: UpdateDialogDto) {
     this.dialogRepository.update(id, updateDialogDto);
-    return this.dialogRepository.findOne({
+    return await this.dialogRepository.findOne({
       where: { id },
       relations: ['users', 'messages'],
     });
@@ -76,7 +76,7 @@ export class DialogService {
       user.dialogs = user.dialogs.filter((dialog) => dialog.id !== id);
     });
     this.userRepository.save(users);
-    return this.dialogRepository.delete(id);
+    return await this.dialogRepository.delete(id);
   }
 
   async addUser(dialogId: string, userId: string) {
@@ -106,7 +106,7 @@ export class DialogService {
     this.userRepository.save(userWithDialogs);
     dialogWithUsers.users.push(user);
     this.dialogRepository.save(dialogWithUsers);
-    return this.dialogRepository.findOne({
+    return await this.dialogRepository.findOne({
       where: { id: dialogId },
       relations: ['users', 'messages'],
     });

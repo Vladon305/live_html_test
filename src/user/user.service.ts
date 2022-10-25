@@ -17,7 +17,7 @@ export class UserService {
     const fileName = await this.fileService.createFileFromUrl(
       'https://joeschmoe.io/api/v1/random',
     );
-    const user = this.usersRepository.save(
+    const user = await this.usersRepository.save(
       this.usersRepository.create({
         ...createUserDto,
         ava: fileName,
@@ -28,18 +28,18 @@ export class UserService {
     return user;
   }
 
-  findAll() {
-    return this.usersRepository.find({ relations: ['dialogs'] });
+  async findAll() {
+    return await this.usersRepository.find({ relations: ['dialogs'] });
   }
 
-  findOne(id: string) {
-    return this.usersRepository.findOne({
+  async findOne(id: string) {
+    return await this.usersRepository.findOne({
       where: { id },
       relations: ['dialogs'],
     });
   }
 
-  remove(id: string) {
-    return this.usersRepository.delete(id);
+  async remove(id: string) {
+    return await this.usersRepository.delete(id);
   }
 }

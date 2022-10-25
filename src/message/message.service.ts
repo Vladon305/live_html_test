@@ -46,15 +46,15 @@ export class MessageService {
     return message;
   }
 
-  findAll(id: string) {
-    return this.messageRepository.find({
+  async findAll(id: string) {
+    return await this.messageRepository.find({
       where: { dialog: { id } },
       relations: ['user', 'dialog'],
     });
   }
 
-  findOne(dialogId: string, messageId: string) {
-    return this.messageRepository.findOne({
+  async findOne(dialogId: string, messageId: string) {
+    return await this.messageRepository.findOne({
       where: {
         dialog: { id: dialogId },
         id: messageId,
@@ -63,7 +63,7 @@ export class MessageService {
     });
   }
 
-  update(
+  async update(
     dialogId: string,
     messageId: string,
     updateMessageDto: UpdateMessageDto,
@@ -72,14 +72,14 @@ export class MessageService {
       { dialog: { id: dialogId }, id: messageId },
       updateMessageDto,
     );
-    return this.dialogRepository.findOne({
+    return await this.dialogRepository.findOne({
       where: { id: messageId },
       relations: ['user', 'dialog'],
     });
   }
 
-  remove(dialogId: string, messageId: string) {
-    return this.messageRepository.delete({
+  async remove(dialogId: string, messageId: string) {
+    return await this.messageRepository.delete({
       dialog: { id: dialogId },
       id: messageId,
     });
